@@ -1,8 +1,23 @@
 body {
-  margin: 0;
-  padding: 0;
   background-color: rgba(169, 47, 229, 0.578);
   color: black;
   box-sizing: border-box;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+}
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: black solid 2px;
+  border-radius: 20px;
+  padding: 10px;
+}
+h1 {
   text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

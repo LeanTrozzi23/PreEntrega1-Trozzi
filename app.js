@@ -1,89 +1,212 @@
+console.log("Inicio del programa");
+
+// FECHA Y HORA
+const fecha = new Date();
+console.log("Fecha y Hora: " + fecha.toLocaleString());
+
+const carrito = [
+  { Producto: "Remera", categoria: "Ropa", precio: 25000 },
+  { Producto: "Buzo", categoria: "Ropa", precio: 35000 },
+  { Producto: "Conjunto", categoria: "Ropa", precio: 70000 },
+  { Producto: "Medias", categoria: "Ropa", precio: 3000 },
+  { Producto: "Llavero", categoria: "Accesorios", precio: 2000 },
+  { Producto: "Gorro", categoria: "Accesorios", precio: 10000 },
+  { Producto: "Collar", categoria: "Accesorios", precio: 5000 },
+  { Producto: "Piluso", categoria: "Accesorios", precio: 8000 },
+];
+
+// FUNCIÓNES
 function pedirNombre() {
   let nombre = prompt("Ingrese su nombre:");
   return nombre;
 }
-function pedirApellido() {
-  let apellido = prompt("Ingrese su apellido:");
-}
+
 function pedirEdad() {
   let edad = prompt("Ingrese su edad:");
-  while (edad === "" || edad <= 0) {
-    alert("La edad ingresada no es válida ⛔");
+
+  // Validar que es un número válido
+  while (isNaN(edad) || edad === null || edad === "" || edad <= 0) {
+    alert(
+      "La edad ingresada no es válida ⛔. Por favor, ingrese una edad válida."
+    );
     edad = prompt("Ingrese su edad:");
   }
-  return edad;
+
+  return parseInt(edad);
 }
+
 let nombre = pedirNombre();
-let apellido = pedirApellido();
 let edad = pedirEdad();
 
 let mensaje;
 
-while (edad === "" || edad <= 17) {
+while (isNaN(edad) || edad === null || edad === "" || edad <= 17) {
   alert(
-    "La edad ingresada no es válida ⛔. Debes ser mayor de edad o estar acompañado de un adulto responsable."
+    "La edad ingresada no es válida ⛔. Por favor, ingrese una edad válida."
   );
   edad = pedirEdad();
 }
+
 if (edad > 17) {
-  mensaje =
-    "Eres mayor de edad, ya puedes realizar compras en nuestro sitio ✅";
+  mensaje = "Sos mayor de edad, podrás realizar operaciones en este sitio ✅";
 }
+
 alert(mensaje);
+
 alert("¡Bienvenido, " + nombre + "!");
+
 console.log("¡Bienvenido, " + nombre + "!");
 
-let producto;
-let cantidad;
-let precioPorUnidad;
-let total;
+let total = 0;
 
-do {
-  producto = prompt("Ingrese el producto (remera, buzo o conjunto):");
-  if (producto === "remera" || producto === "buzo" || producto === "conjunto") {
-    break;
-  } else {
-    alert("Producto no válido. Por favor, ingrese remera, buzo o conjunto.");
-  }
-} while (true);
-
-if (producto === "remera") {
-  precioPorUnidad = 25000;
-} else if (producto === "buzo") {
-  precioPorUnidad = 35000;
-} else {
-  precioPorUnidad = 70000;
+// Función para validar y obtener la categoría del usuario
+function obtenerCategoriaValida() {
+  let categoria;
+  do {
+    categoria = prompt(
+      `Ingrese la categoría:\n* Ropa \n* Accesorios`
+    ).toLowerCase();
+    if (categoria === "ropa" || categoria === "accesorios") {
+      break;
+    } else {
+      alert("Categoría no válida. Por favor, ingrese ropa o accesorios.");
+    }
+  } while (true);
+  return categoria;
 }
 
+// Función para validar y obtener el producto del usuario dentro de la categoría seleccionada
+function obtenerProductoValido(categoria) {
+  let producto;
+  do {
+    if (categoria === "ropa") {
+      producto = prompt(
+        `Ingrese el producto:\n- Remera ($25.000)\n- Buzo ($35.000)\n- Conjunto ($70.000)\n- Medias ($3.000)`
+      ).toLowerCase();
+    } else if (categoria === "accesorios") {
+      producto = prompt(
+        `Ingrese el producto:\n- Gorro ($10.000)\n- Collar ($5.000)\n- Piluso ($8.000)\n- Llavero ($2.000)`
+      ).toLowerCase();
+    }
+
+    // Filtrar productos que coincidan con la categoría seleccionada
+    const productosFiltrados = carrito.filter(
+      (item) => item.categoria.toLowerCase() === categoria
+    );
+
+    // Verificar si hay productos filtrados
+    if (productosFiltrados.length > 0) {
+      console.log("Productos disponibles:");
+      console.log(productosFiltrados);
+
+      // Verificar si el producto seleccionado está en la lista filtrada
+      const productoEnCarrito = productosFiltrados.find(
+        (item) => item.Producto.toLowerCase() === producto
+      );
+
+      if (productoEnCarrito) {
+        return productoEnCarrito;
+      } else {
+        alert(
+          "Producto no válido. Por favor, elija un producto válido de la lista."
+        );
+      }
+    } else {
+      alert("No hay productos disponibles en la categoría seleccionada.");
+      break;
+    }
+  } while (true);
+}
+
+// Mapeo de productos a precios
+const preciosPorProducto = {
+  remera: 25000,
+  buzo: 35000,
+  conjunto: 70000,
+  medias: 3000,
+  llavero: 2000,
+  gorro: 10000,
+  collar: 5000,
+  piluso: 8000,
+};
+
+const carritoUsuario = [];
+
 do {
-  cantidad = prompt("Ingrese la cantidad de productos a comprar:");
-  if (cantidad > 0) {
-    break;
+  const categoriaSeleccionada = obtenerCategoriaValida();
+  const productoSeleccionado = obtenerProductoValido(categoriaSeleccionada);
+
+  // Verificar si el producto seleccionado tiene el formato correcto
+  if (productoSeleccionado && productoSeleccionado.Producto) {
+    precioUnitario =
+      preciosPorProducto[productoSeleccionado.Producto.toLowerCase()] || 0;
   } else {
-    alert("Cantidad no válida, por favor ingrese cantida mayor a 0.");
+    alert(
+      "Error al obtener el producto seleccionado. Por favor, inténtelo nuevamente."
+    );
+    break;
+  }
+
+  // Solicitar al usuario que ingrese la cantidad
+  do {
+    cantidad = parseInt(prompt("Ingrese la cantidad (mayor que 0):"));
+    if (!isNaN(cantidad) && cantidad > 0) {
+      break;
+    } else {
+      alert("Cantidad no válida. Por favor, ingrese un número mayor que 0.");
+    }
+  } while (true);
+
+  // Preguntar al usuario si desea agregar el producto al carrito
+  const agregarAlCarrito = confirm(
+    `Deseas agregar ${cantidad} ${productoSeleccionado.Producto}(s) al carrito?`
+  );
+
+  if (agregarAlCarrito) {
+    // Agregar el producto al carrito
+    alert(
+      `${cantidad} ${productoSeleccionado.Producto}(s) se han agregado al carrito.`
+    );
+  } else {
+    alert("Producto no agregado al carrito.");
+  }
+
+  carritoUsuario.push({
+    Producto: productoSeleccionado.Producto,
+    cantidad: cantidad,
+    precioUnitario: precioUnitario,
+  });
+
+  total += cantidad * precioUnitario;
+
+  const agregarOtroProducto = confirm("¿Deseas agregar otro producto?");
+  if (!agregarOtroProducto) {
+    break;
   }
 } while (true);
 
-total = precioPorUnidad * cantidad;
+console.log("Resumen de la compra:");
+console.log(carritoUsuario);
 
-alert(
-  "Producto: " +
-    producto +
-    "\nCantidad: " +
-    cantidad +
-    "\nTotal de la compra: " +
-    total
-);
+// Título
+const titulo = "⚡ Tienda online oficial ⚡";
 
-let mensajeTotal =
-  "Producto = " +
-  producto +
-  "\n" +
-  "Cantidad = " +
-  cantidad +
-  (cantidad === 1 ? " Unidad" : " Unidades") +
-  "\n" +
-  "Total de la compra = $" +
-  total;
+// Mensaje total de la compra
+const mensajeTotal =
+  `${titulo}\n\nCompra realizada 🛒✅\n\n` +
+  carritoUsuario
+    .map(
+      (item) =>
+        `Producto: ${item.Producto}\nCantidad: ${item.cantidad}\nPrecio: $${
+          item.cantidad * item.precioUnitario
+        }\n`
+    )
+    .join("\n") +
+  `\nTotal de la compra: $${total}💰\n\n¡Muchas gracias por tu compra!🙌😁`;
+
+// Mostrar en consola
 console.log(mensajeTotal);
-alert("¡Gracias por su compra!");
+
+// Agradecer al usuario por la compra
+alert("¡Muchas gracias por tu compra! 🙌😁");
+console.log("Fin del programa");
